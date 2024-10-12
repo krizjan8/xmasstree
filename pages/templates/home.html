@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'home/css/bootstrap.css' %}"
+/>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#myButton').click(function(e){
+                e.preventDefault(); // Zabrání defaultní akci formuláře
+                $.ajax({
+                    url: '{% url "click" %}',
+                    type: 'post',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function(response){
+                        console.log('Server responded: ' + response);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $('#colorForm').submit(function(e){
+                e.preventDefault(); // Zabrání defaultní akci formuláře
+                var selectedColor = $('#colorPicker').val();
+                $.ajax({
+                    url: '{% url "color_action" %}',
+                    type: 'post',
+                    data: {
+                        color: selectedColor,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function(response){
+                        console.log('Server responded: ' + response.message);
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="card" style="width: 18rem;">
+  {% csrf_token %}
+    <img src="{% static 'img/riker-frakes.gif' %}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a id="myButton" type="submit" class="btn btn-primary">Click Me!</a>
+  </div>
+</div>
+ <div class="container">
+        <h1>Vyberte barvu</h1>
+        <form id="colorForm">
+            {% csrf_token %}
+            <input type="color" id="colorPicker" name="color">
+            <button type="submit" class="btn btn-primary">Odeslat barvu</button>
+        </form>
+    </div>
+
+</body>
+</html>
